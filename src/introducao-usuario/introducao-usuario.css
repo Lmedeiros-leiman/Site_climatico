@@ -1,0 +1,52 @@
+.tabela_usuario{
+    max-width: 480px;
+    min-width: 480px;
+
+    padding: 1rem;
+
+    background-color: steelblue ;
+    color: ghostwhite;
+
+    display: flex;
+    flex-direction: column;
+}
+.informacao{
+    display: flex;
+    justify-content: space-between;
+}
+.imagem{
+    font-size: 5rem;
+    text-align: center;
+    margin-right: 2rem;
+    margin-left: 1rem;
+}
+.dados_clima {
+    display: flex;
+    margin-top: 1.5rem;
+}
+.temperatura{
+    margin-right: 1rem;
+    margin-bottom: 2rem;
+    font-size: large;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    justify-content: space-between;
+    align-items: stretch;
+}
+.separador::after{
+    display: block;
+    position: absolute;
+    width: 95%;
+    height: .2rem;
+    border-radius: 10px;
+    background-color: whitesmoke;
+    top: 50%; left: 0%;
+    transform: translateX(-50%);
+    transform: translateY(-50%);
+    content: "";
+}
+.principal{
+    font-size: xxx-large;
+}
