@@ -24,6 +24,7 @@ a fazer :
 - adicionar opção de busca por cidade especifica.
 - adicinar lista 10 cidades globais (ou proximas?)
 
+* Imagem das modificações visuais no primeiro dia:
 ![Imagem do projeto no primeiro dia:](https://user-images.githubusercontent.com/57924586/224162796-1ec71793-60ab-41c2-872e-bd63d221c64f.png)
 
 
