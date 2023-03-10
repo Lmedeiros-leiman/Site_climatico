@@ -18,10 +18,19 @@ A API utilizada nesta aplicação é a [Open Weather API](https://api.openweathe
 
 # Atualizações
 
-### Dia 1: 
+### Dia 1:
 criado parte principal da aplicação, o usuário pode receber dados da api da sua localização atual.
-a fazer : 
+a fazer :
 - adicionar opção de busca por cidade especifica.
 - adicinar lista 10 cidades globais (ou proximas?)
 
-![Imagem do projeto no primeiro dia:](img.png)
+* Imagem das modificações visuais no primeiro dia:
+  ![Imagem do projeto no primeiro dia:](https://user-images.githubusercontent.com/57924586/224162796-1ec71793-60ab-41c2-872e-bd63d221c64f.png)
+
+### Dia 2:
+adicionado entrada de usuário por botão.
+a fazer : 
+- optimizar o código
+- consertar bug de nome da API ao chamar certas cidades (como brasilia)
+
+
