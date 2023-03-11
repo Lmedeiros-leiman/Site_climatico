@@ -39,6 +39,7 @@ a fazer :
 código optimizado para uma melhor leitura
 retiradas funções duplicadas
 pequena atualização de segurança
+(trocado chave de api)
 corrigidos bugs 
-observação : para aqueles que tentarem pegar a chave de api das versões anteriores, não perca seu tempo, a chave ja foi trocada.
+
 
