@@ -1,42 +1,20 @@
 import "./introducao-usuario.css";
 import {useEffect, useState} from "react";
+import { pegar_chave } from "../chaveapi/chaveapi.js";
 
 const completarnome = new Intl.DisplayNames([], { type: 'region' });
 const posicoescardinais = ["Norte", "Nordeste", "Leste", "Sudeste", "Sul", "Sudoeste", "Oeste", "Noroeste"];
 function converterdirecaovento(direcao) {return posicoescardinais[Math.floor(((direcao + 22.5) % 360) /45 )];}
-const chaveAPI = "18540fd8ab42c5c204bc3ef230383031";
 
-
-
-
-
-
-
-
+let cidade_inicial = "Brasilia";
 function Introducao_usuario() {
+    //const [chaveAPI, set_chave] = useState(chave());
+    const [erro, set_erro] = useState(); // função que lida com erros e mostrara o que deu errado para o usuário.
 
-    const [erro, set_erro] = useState();
-    const [pegando_dados, set_pegando_dados] = useState(false);
+    const [pegando_dados, set_pegando_dados] = useState(false); // aqui impede qualquer botão de enviar multiplos pedidos desnecessarios e sobrecarregar o navegador
+    const [pegando_cidade, set_pegando_cidade] = useState(cidade_inicial); // aqui define a cidade mostrada inicialmente no painel do usuário.
+    const [tabela_usuario, set_tabela] = useState(null); // aqui define a tabela mostrada para o usuário (desenho em html)
 
-
-    let Brasilia = {name: "local", latitude: -15.7934036, longitude: -47.8823172,};
-    let Cabul = {name: "local", latitude: 34.533333, longitude: 69.166667,};
-    let Londres = {name: "local", latitude: 51.507222, longitude: -0.1275,};
-
-    const [pegando_cidade, set_pegando_cidade] = useState(Brasilia);
-    const [cidade,set_cidade] = useState();
-
-    const [tabela_usuario, set_tabela] = useState(null);
-
-    function validarfetch(resposta) {
-        if (!resposta.ok) {
-            const error = new Error(`HTTP error! Status code: ${resposta.status}`);
-            error.status = resposta.status;
-            throw error;
-            return false
-        }
-        return true;
-    }
 
     function pegarlocalizacaousuario(){
         if (navigator.geolocation) {
@@ -65,64 +43,86 @@ function Introducao_usuario() {
         set_pegando_cidade(entrada)
     }
     useEffect( () => {
-
-        const joao = async () => {
+        // codigo principal;
+        const alle = async () => {
             try {
-                let pedido;
-                let tipo;
-                if (typeof(pegando_cidade) === "string" ) {
-                    pedido = `http://api.openweathermap.org/geo/1.0/direct?q=${pegando_cidade}&appid=${chaveAPI}`;
-                    tipo = "nome";
-                } if (typeof(pegando_cidade) === "object") {
-                    pedido = `http://api.openweathermap.org/geo/1.0/reverse?lat=${pegando_cidade.latitude}&lon=${pegando_cidade.longitude}&limit=1&appid=${chaveAPI}`;
-                    tipo = "objeto";
+                async function lidar_com_pedido(pedido){
+                    function validarfetch(resposta) {
+                        if (!resposta.ok) {
+                            const error = new Error(`HTTP error! Status code: ${resposta.status}`);
+                            error.status = resposta.status;
+                            throw error;
+                            return false
+                        }
+                        return true;
+                    }
+                    try {
+                        let resposta = await fetch(pedido);
+                        validarfetch(resposta);
+                        let json;
+                        if (json = await resposta.json()) {
+                            return json;
+                        }
+
+                    } catch (error) {console.warn(error)}
                 }
 
-                let resposta = await fetch(pedido);
-                validarfetch(resposta)
-                const json = await resposta.json();
-                set_cidade(json[0]);
+                let pedidooriginal = pegando_cidade;
+                let pedido;
+                let json;
+                let chaveAPI = await pegar_chave();
 
+
+
+
+                // pega as coordenadas da cidade e prepara para pedir os dados da api de clima;
+                if (typeof(pegando_cidade) === "string" ) {
+                    //pega os dados de forma normal com o nome da cidade;
+                    pedido = `http://api.openweathermap.org/geo/1.0/direct?q=${pedidooriginal}&appid=${chaveAPI}`;
+                    json = await lidar_com_pedido(pedido);
+                    pedidooriginal = json[0];
+                } else {
+                    // pega os dados assumindo que é um pedido por objeto com as coordenadas da cidade;
+                    pedido = `http://api.openweathermap.org/geo/1.0/reverse?lat=${pedidooriginal.latitude}&lon=${pedidooriginal.longitude}&limit=1&appid=${chaveAPI}`;
+                    if (json = await lidar_com_pedido(pedido)) {
+                        pedidooriginal = json[0];
+                    } else {
+                        pedido = `http://api.openweathermap.org/geo/1.0/reverse?lat=${pedidooriginal.lat}&lon=${pedidooriginal.lon}&limit=1&appid=${chaveAPI}`;
+                        json = await lidar_com_pedido(pedido)
+                        pedidooriginal = json[0];
+                    }
+
+                }
+
+                // pega os dados climáticos da cidade
+                pedido = `https://api.openweathermap.org/data/2.5/weather?lat=${pedidooriginal.lat}&lon=${pedidooriginal.lon}&units=metric&appid=${chaveAPI}`
+                json = await lidar_com_pedido(pedido);
+
+
+                // modifica o pedido para mostrar o nome da cidade, não do local onde fica a estação e outros detalhes caso nescessario;
+                json.name = pedidooriginal.name;
+
+
+
+                // mostra o pedido para o usuário;
+                set_tabela(criar_tabela(json));
 
             } catch (error) {
                 set_erro(error)
             }
         };
-        joao();
+
+        // chama a função principal;
+        alle();
 
     },[pegando_cidade])
 
-
-    useEffect( () => {
-        const joao = async () => {
-            try {
-                console.log(cidade)
-                let pedido = `https://api.openweathermap.org/data/2.5/weather?lat=${cidade.lat}&lon=${cidade.lon}&units=metric&appid=${chaveAPI}`
-
-                let resposta = await fetch(pedido);
-                validarfetch(resposta)
-                const json = await resposta.json();
-                set_tabela(criar_tabela(json));
-
-
-
-            } catch (error) {
-                set_erro(error)
-            }
-        };
-        joao();
-    },[cidade])
-
-
-
-
     function criar_tabela(dados) {
-
         let tabela = (
             <section className="tabela_usuario">
                 <section className="dados_cidade">
-                    <nav className={"informacao"}> {dados.name}, {completarnome.of(dados.sys.country)} <button onClick={pegarlocalizacaousuario}>Pegar localização</button></nav>
-                    <nav className={"informacao"}><aside>Coordenadas: {dados.coord.lon} Lon,  {dados.coord.lat} Lat</aside><input id={"entrada_usuario"} /><button onClick={atualizar_entrada_usuario}>Atualizar</button> </nav>
+                    <nav className={"informacao"}> {dados.name}, {completarnome.of(dados.sys.country)} <span><input id={"entrada_usuario"} /><button onClick={atualizar_entrada_usuario}>Atualizar</button> </span></nav>
+                    <nav className={"informacao"}><aside>Coordenadas: {dados.coord.lon} Lon,  {dados.coord.lat} Lat</aside> <button onClick={pegarlocalizacaousuario}>Pegar localização</button> </nav>
                 </section>
                 <main className={"dados_clima"}>
                     <i className={"imagem bi bi-cup-hot"}></i>
@@ -133,8 +133,6 @@ function Introducao_usuario() {
                     </div>
 
                     <div>
-
-
                         <div>Vento: {dados.wind.speed}Km/h <span>{converterdirecaovento(dados.wind.deg)}</span></div>
                         <div>{dados.weather[0].description}</div>
                         <div>Humidade: {dados.main.humidity} %</div>

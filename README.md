@@ -15,6 +15,11 @@ A API utilizada nesta aplicação é a [Open Weather API](https://api.openweathe
 ## Requesitos para utilizar
 
 - [React](https://github.com/facebook/create-react-app)
+- [Conta e chave no site da open weather](https://openweathermap.org/)
+### Importante:
+ao criar a chave, criar um arquivo na pasta public com o nome "chaveapi.txt" com a chave dentro dele.
+
+caso tenha interesse em mudar para um local mais seguro, a função responsavel pela chave está localizada na pasta chaveapi em src
 
 # Atualizações
 
@@ -29,8 +34,11 @@ a fazer :
 
 ### Dia 2:
 adicionado entrada de usuário por botão.
-a fazer : 
-- optimizar o código
-- consertar bug de nome da API ao chamar certas cidades (como brasilia)
-
+a fazer :
+### Dia 3:
+código optimizado para uma melhor leitura
+retiradas funções duplicadas
+pequena atualização de segurança
+corrigidos bugs 
+observação : para aqueles que tentarem pegar a chave de api das versões anteriores, não perca seu tempo, a chave ja foi trocada.
 
